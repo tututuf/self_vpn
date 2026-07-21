@@ -4,11 +4,11 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/hy2-vpn-admin
-ExecStart=/usr/bin/node /opt/hy2-vpn-admin/server.js
+WorkingDirectory=/www/self_vpn
+ExecStart=/usr/bin/node /www/self_vpn/server.js
 Restart=always
 RestartSec=3
-Environment=ADMIN_CONFIG_PATH=/opt/hy2-vpn-admin/admin.config.json
+Environment=ADMIN_CONFIG_PATH=/www/self_vpn/admin.config.json
 
 [Install]
 WantedBy=multi-user.target

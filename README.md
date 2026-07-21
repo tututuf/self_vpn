@@ -92,7 +92,7 @@ docker/
 Build and start:
 
 ```bash
-cd /opt/hy2-vpn-admin
+cd /www/self_vpn
 docker compose up -d --build
 ```
 
@@ -149,7 +149,7 @@ This is powerful access. Only expose the admin panel behind a strong `adminToken
 Without Compose:
 
 ```bash
-cd /opt/hy2-vpn-admin
+cd /www/self_vpn
 docker build -t hy2-vpn-admin:latest .
 docker run -d \
   --name hy2-vpn-admin \
@@ -160,8 +160,8 @@ docker run -d \
   -e ADMIN_CONFIG_PATH=/config/admin.config.json \
   -e SYSTEMCTL_BIN=/usr/local/bin/host-systemctl \
   -e JOURNALCTL_BIN=/usr/local/bin/host-journalctl \
-  -v /opt/hy2-vpn-admin/admin.config.json:/config/admin.config.json:ro \
-  -v /opt/hy2-vpn-admin/hy2.yaml:/config/hy2.yaml \
+  -v /www/self_vpn/admin.config.json:/config/admin.config.json:ro \
+  -v /www/self_vpn/hy2.yaml:/config/hy2.yaml \
   hy2-vpn-admin:latest
 ```
 
