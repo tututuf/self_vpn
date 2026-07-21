@@ -1,0 +1,8 @@
+{
+  "host": "0.0.0.0",
+  "port": 8787,
+  "adminToken": "change-this-admin-token",
+  "downloadToken": "change-this-download-token",
+  "hy2YamlPath": "./hy2.yaml",
+  "vpnServiceName": "hysteria-server.service"
+}

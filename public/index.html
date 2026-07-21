@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HY2 VPN Admin</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <h1>HY2 VPN Admin</h1>
+          <p id="serviceName">hysteria-server.service</p>
+        </div>
+        <div id="statusBadge" class="status-badge unknown">unknown</div>
+      </header>
+
+      <section id="authPanel" class="panel auth-panel hidden">
+        <label for="adminToken">Admin Token</label>
+        <div class="token-row">
+          <input id="adminToken" type="password" autocomplete="current-password" placeholder="ADMIN_TOKEN">
+          <button id="saveTokenBtn" type="button">保存</button>
+        </div>
+      </section>
+
+      <section class="panel controls-panel">
+        <div class="panel-heading">
+          <h2>服务</h2>
+          <button id="refreshStatusBtn" class="ghost" type="button">刷新</button>
+        </div>
+        <div class="action-grid">
+          <button id="startBtn" class="success" type="button">启动</button>
+          <button id="stopBtn" class="danger" type="button">关闭</button>
+          <button id="restartBtn" class="primary" type="button">重启</button>
+        </div>
+        <pre id="serviceOutput" class="output"></pre>
+      </section>
+
+      <section class="panel editor-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>配置</h2>
+            <p id="fileMeta">hy2.yaml</p>
+          </div>
+          <div class="toolbar">
+            <input id="yamlImport" class="file-input" type="file" accept=".yaml,.yml,text/yaml,application/x-yaml,text/plain">
+            <button id="importBtn" class="ghost" type="button">导入 YAML</button>
+            <button id="saveConfigBtn" class="primary" type="button">保存配置</button>
+          </div>
+        </div>
+        <textarea id="configEditor" spellcheck="false"></textarea>
+      </section>
+
+      <section class="panel download-panel">
+        <div class="panel-heading">
+          <h2>下载</h2>
+          <button id="copyLinkBtn" class="ghost" type="button">复制链接</button>
+        </div>
+        <a id="downloadLink" class="download-link" href="/download/hy2.yaml" download>下载 hy2.yaml</a>
+      </section>
+
+      <section class="panel logs-panel">
+        <div class="panel-heading">
+          <h2>日志</h2>
+          <button id="refreshLogsBtn" class="ghost" type="button">刷新</button>
+        </div>
+        <pre id="logsOutput" class="output logs"></pre>
+      </section>
+    </main>
+
+    <div id="toast" class="toast hidden"></div>
+    <script src="/app.js"></script>
+  </body>
+</html>

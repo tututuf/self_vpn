@@ -1,0 +1,14 @@
+[Unit]
+Description=HY2 VPN Admin
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/hy2-vpn-admin
+ExecStart=/usr/bin/node /opt/hy2-vpn-admin/server.js
+Restart=always
+RestartSec=3
+Environment=ADMIN_CONFIG_PATH=/opt/hy2-vpn-admin/admin.config.json
+
+[Install]
+WantedBy=multi-user.target
