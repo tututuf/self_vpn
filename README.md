@@ -18,7 +18,7 @@ If your script created a different service name, edit `vpnServiceName` in `admin
 
 ## Admin Config
 
-Edit `admin.config.json` before running the app:
+Edit `admin.config.json` before running or deploying the app:
 
 ```json
 {
@@ -38,20 +38,71 @@ Edit `admin.config.json` before running the app:
 Environment variables still work and override the JSON file when set:
 
 ```bash
-ADMIN_CONFIG_PATH=/opt/hy2-vpn-admin/admin.config.json
+ADMIN_CONFIG_PATH=/config/admin.config.json
 ADMIN_TOKEN=override-admin-token
 DOWNLOAD_TOKEN=override-download-token
-HY2_YAML_PATH=/opt/hy2-vpn-admin/hy2.yaml
+HY2_YAML_PATH=/config/hy2.yaml
 VPN_SERVICE_NAME=hysteria-server.service
 PORT=8787
 HOST=0.0.0.0
 ```
 
-## Run
+## Local Run
 
 ```bash
 npm start
 ```
+
+Open:
+
+```text
+http://127.0.0.1:8787
+```
+
+## Docker Image
+
+Build the image from the project root:
+
+```bash
+docker build -t hy2-vpn-admin:latest .
+```
+
+Or with npm:
+
+```bash
+npm run docker:build
+```
+
+The image does not include your real `admin.config.json`; mount it at runtime.
+
+## Docker Deploy With Compose
+
+Copy the whole project directory to the server, then make sure these files exist in the project root:
+
+```text
+admin.config.json
+hy2.yaml
+docker-compose.yml
+Dockerfile
+server.js
+public/
+docker/
+```
+
+Build and start:
+
+```bash
+cd /opt/hy2-vpn-admin
+docker compose up -d --build
+```
+
+If your server uses old Compose v1:
+
+```bash
+docker-compose up -d --build
+```
+
+The compose file runs the container with `privileged: true` and `pid: host` so the admin panel can run host `systemctl` and `journalctl` through `nsenter`.
 
 Open:
 
@@ -65,22 +116,56 @@ Download URL:
 http://your-server-ip:8787/download/hy2.yaml?token=your-download-token
 ```
 
-## CentOS 7
+Useful commands:
 
-Install Node.js 18 or newer, copy this project to `/opt/hy2-vpn-admin`, edit `/opt/hy2-vpn-admin/admin.config.json`, then start it:
+```bash
+docker compose logs -f
+docker compose restart
+docker compose down
+```
+
+
+## Docker Host Service Control
+
+Yes, the Docker version can start, stop, restart, and inspect the host VPN service, but only because `docker-compose.yml` grants host-level access:
+
+```yaml
+privileged: true
+pid: host
+```
+
+The container command wrappers use `nsenter` to enter the host namespaces and host root filesystem, then run host `/usr/bin/systemctl` and `/usr/bin/journalctl`:
+
+```text
+/usr/local/bin/host-systemctl
+/usr/local/bin/host-journalctl
+```
+
+If you remove `privileged: true` or `pid: host`, the admin panel can still edit and download YAML, but host service start/stop/status/logs will not work.
+
+This is powerful access. Only expose the admin panel behind a strong `adminToken`, and preferably restrict access by firewall or reverse proxy.
+## Docker Run
+
+Without Compose:
 
 ```bash
 cd /opt/hy2-vpn-admin
-npm start
+docker build -t hy2-vpn-admin:latest .
+docker run -d \
+  --name hy2-vpn-admin \
+  --restart unless-stopped \
+  --privileged \
+  --pid=host \
+  -p 8787:8787 \
+  -e ADMIN_CONFIG_PATH=/config/admin.config.json \
+  -e SYSTEMCTL_BIN=/usr/local/bin/host-systemctl \
+  -e JOURNALCTL_BIN=/usr/local/bin/host-journalctl \
+  -v /opt/hy2-vpn-admin/admin.config.json:/config/admin.config.json:ro \
+  -v /opt/hy2-vpn-admin/hy2.yaml:/config/hy2.yaml \
+  hy2-vpn-admin:latest
 ```
 
-To run it as a service, copy `systemd/hy2-vpn-admin.service` to `/etc/systemd/system/hy2-vpn-admin.service`, then run:
-
-```bash
-systemctl daemon-reload
-systemctl enable --now hy2-vpn-admin.service
-systemctl status hy2-vpn-admin.service
-```
+If you change `port` in `admin.config.json`, update the `ports` mapping or `-p` value too.
 
 Open firewall port if needed:
 

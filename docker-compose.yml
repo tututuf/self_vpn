@@ -1,0 +1,17 @@
+services:
+  hy2-vpn-admin:
+    build: .
+    image: hy2-vpn-admin:latest
+    container_name: hy2-vpn-admin
+    restart: unless-stopped
+    privileged: true
+    pid: host
+    ports:
+      - "8787:8787"
+    environment:
+      ADMIN_CONFIG_PATH: /config/admin.config.json
+      SYSTEMCTL_BIN: /usr/local/bin/host-systemctl
+      JOURNALCTL_BIN: /usr/local/bin/host-journalctl
+    volumes:
+      - ./admin.config.json:/config/admin.config.json:ro
+      - ./hy2.yaml:/config/hy2.yaml
